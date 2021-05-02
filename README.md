@@ -1,5 +1,7 @@
 # python-projects
-a collection of python projects, including tic-tac-toe and rock-paper-scissors
+A collection of python projects, including tic-tac-toe and rock-paper-scissors. 
 
 
-created using free code camp tutorials
+Created using free code camp tutorials & credit to Kylie Ying
+
+https://www.youtube.com/watch?v=8ext9G7xspg
