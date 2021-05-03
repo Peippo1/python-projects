@@ -11,13 +11,6 @@ class Player:
     def get_move(self, game):
         pass
 
-class RandomComputerPlayer(Player):
-    def __init__(self, letter):
-        super().__init__(letter)
-
-    def get_move(self, game):
-        square = random.choice(game.available_moves())
-
 class HumanPlayer(Player):
     def __init__(self, letter):
         super().__init__(letter)
@@ -26,76 +19,66 @@ class HumanPlayer(Player):
         valid_square = False
         val = None
         while not valid_square:
-            square = input(self.letter + '\'s turn. Input move (0-8):')
-            # we're going to check that this is the correct value by trying to cast
-            # it to an integer, and if it is not, then we say it is invalid. 
-            # if that spot is nit available on the board, we also sat that it is invalid. 
+            square = input(self.letter + '\'s turn. Input move (0-9): ')
             try:
                 val = int(square)
                 if val not in game.available_moves():
                     raise ValueError
-                valid_square = True # if these are successful, then Yay!
+                valid_square = True
             except ValueError:
                 print('Invalid square. Try again.')
-
         return val
+            # we're going to check that this is the correct value by trying to cast
+            # it to an integer, and if it is not, then we say it is invalid. 
+            # if that spot is nit available on the board, we also sat that it is invalid. 
 
-# using a super class for minimax 
-class GeniusComputerPlayer(Player):
+
+class RandomComputerPlayer(Player):
+    def __init__(self, letter):
+        super().__init__(letter)
+
+    def get_move(self, game):
+        square = random.choice(game.available_moves())
+        return square
+
+class SmartComputerPlayer(Player):
     def __init__(self, letter):
         super().__init__(letter)
 
     def get_move(self, game):
         if len(game.available_moves()) == 9:
-            square = random.choice(game.available_moves()) # randomly choose one
+            square = random.choice(game.available_moves())
         else:
-            # get the square based off the minimax algorithm
-            square = self.minimax(game, self.letter)['position'] # position indexed for dictionary
+            square = self.minimax(game, self.letter)['position']
         return square
 
     def minimax(self, state, player):
-        max_player = self.letter #yourself!!
-        other_player = '0' if player ==  'X' else 'X' #the other player.. so whatever letter is NOT
+        max_player = self.letter  # yourself
+        other_player = 'O' if player == 'X' else 'X'
 
-        # first, we want to check if the previous move is the winner
-        # this is our base case
+        # first we want to check if the previous move is a winner
         if state.current_winner == other_player:
-            # we should return position AND score because we need to keep track of the score
-            # for minimax to work
-            return{'position': None,
-            'score': 1 * (state.num_empty_squares() + 1) if other_player == max_player else -1 * (
-                state.num_empty_squares() + 1)
-            }
-
-        elif not state.empty_squares(): # no empty squares
+            return {'position': None, 'score': 1 * (state.num_empty_squares() + 1) if other_player == max_player else -1 * (
+                        state.num_empty_squares() + 1)}
+        elif not state.empty_squares():
             return {'position': None, 'score': 0}
-
-
-        # initialise some dictionaries
         if player == max_player:
-            best = {'position': None, 'score': -math.inf} # each score should maximize (be larger)
+            best = {'position': None, 'score': -math.inf}  # each score should maximize
         else:
-            best = {'position': None, 'score': math.inf} # each score should minimize
-
+            best = {'position': None, 'score': math.inf}  # each score should minimize
         for possible_move in state.available_moves():
-            # step 1: make a move, try that spot
             state.make_move(possible_move, player)
-            # step 2: recurse using minimax to simulate a game after making that move
-            sim_score = self.minimax(state, other_player) # now we alternate players
+            sim_score = self.minimax(state, other_player)  # simulate a game after making that move
 
-            # step 3: undo the move
+            # undo move
             state.board[possible_move] = ' '
             state.current_winner = None
-            sim_score['position'] = possible_move # otherwise this will get messed up from the recurssion
+            sim_score['position'] = possible_move  # this represents the move optimal next move
 
-            # step 4: update the dictionaries if necessary
-            if player == max_player:
+            if player == max_player:  # X is max player
                 if sim_score['score'] > best['score']:
-                    best = sim_score # replace best
+                    best = sim_score
             else:
                 if sim_score['score'] < best['score']:
-                    best = sim_score # replace best
-
+                    best = sim_score
         return best
-
-        
