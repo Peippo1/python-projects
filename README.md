@@ -3,7 +3,7 @@ A collection of python projects, including tic-tac-toe, rock-paper-scissors, bin
 
 Updated and finalized version of super simple terminal minesweeper game
 
-Created using free code camp tutorials
+Some created using free code camp tutorials most are for examples or just for fun.
 
 https://www.youtube.com/watch?v=8ext9G7xspg
 
